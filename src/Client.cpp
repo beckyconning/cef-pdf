@@ -219,20 +219,6 @@ void Client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 
     CEF_REQUIRE_UI_THREAD();
 
-    if (m_remoteTrigger) {
-        CefRefPtr<CefFrame> frame = browser->GetMainFrame();
-
-        std::ostringstream os;
-
-        os << "window.cefpdf = {";
-        os << "trigger: function () { window." << constants::jsQueryFunction;
-        os << "({request: \"trigger\", onSuccess: function () {}, onFailure: function () {}}); }, ";
-        os << "abort: function () { window." << constants::jsQueryFunction;
-        os << "({request: \"abort\", onSuccess: function () {}, onFailure: function () {}}); }};";
-
-        frame->ExecuteJavaScript(os.str(), frame->GetURL(), 0);
-    }
-
     // Assign this browser to the next job. JobsManager will
     // check if there is any queued job
     m_jobManager->Assign(browser);
@@ -285,6 +271,20 @@ void Client::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
         << ", httpStatusCode: " << httpStatusCode;
 
     CEF_REQUIRE_UI_THREAD();
+
+    if (m_remoteTrigger) {
+        CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+
+        std::ostringstream os;
+
+        os << "window.cefpdf = {";
+        os << "trigger: function () { window." << constants::jsQueryFunction;
+        os << "({request: \"trigger\", onSuccess: function () {}, onFailure: function () {}}); }, ";
+        os << "abort: function () { window." << constants::jsQueryFunction;
+        os << "({request: \"abort\", onSuccess: function () {}, onFailure: function () {}}); }};";
+
+        frame->ExecuteJavaScript(os.str(), frame->GetURL(), 0);
+    }
 
     if (frame->IsMain() && !m_remoteTrigger) {
         m_jobManager->Process(browser, httpStatusCode);
