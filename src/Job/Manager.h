@@ -31,6 +31,10 @@ public:
 
     void Abort(CefRefPtr<CefBrowser> browser, CefLoadHandler::ErrorCode errorCode);
 
+    void RegisterRemoteTrigger(CefRefPtr<CefBrowser> browser);
+
+    void AbortIfRemoteTriggerUnregistered(CefRefPtr<CefBrowser> browser);
+
     void StopAll();
 
     // CefRenderHandler methods:
